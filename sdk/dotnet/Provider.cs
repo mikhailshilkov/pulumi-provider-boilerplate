@@ -9,6 +9,7 @@ using Pulumi.Serialization;
 
 namespace Pulumi.Xyz
 {
+    [XyzResourceType("pulumi:providers:xyz")]
     public partial class Provider : Pulumi.ProviderResource
     {
         /// <summary>

@@ -31,9 +31,6 @@ make ensure
 # build codegen, generate and build SDKs, build the provider
 make build
 
-# add the provider binary somewhere on your PATH
-cp ./bin/pulumi-resource-xyz ~/go/bin
-
 # test
 $ cd examples/simple
 $ yarn link @pulumi/xyz

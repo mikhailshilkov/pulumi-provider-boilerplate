@@ -50,7 +50,7 @@ def get_env_float(*args):
     return None
 
 
-def get_version():
+def get_semver_version():
     # __name__ is set to the fully-qualified name of the current module, In our case, it will be
     # <some module>._utilities. <some module> is the module we want to query the version for.
     root_package, *rest = __name__.split('.')
@@ -79,5 +79,39 @@ def get_version():
     # for dev builds, while semver encodes them as "prerelease" versions. In order to bridge between the two, we convert
     # our dev build version into a prerelease tag. This matches what all of our other packages do when constructing
     # their own semver string.
-    semver_version = SemverVersion(major=major, minor=minor, patch=patch, prerelease=prerelease)
-    return str(semver_version)
+    return SemverVersion(major=major, minor=minor, patch=patch, prerelease=prerelease)
+
+
+def get_version():
+    return str(get_semver_version())
+
+
+def get_resource_args_opts(resource_args_type, resource_options_type, *args, **kwargs):
+    """
+    Return the resource args and options given the *args and **kwargs of a resource's
+    __init__ method.
+    """
+
+    resource_args, opts = None, None
+
+    # If the first item is the resource args type, save it and remove it from the args list.
+    if args and isinstance(args[0], resource_args_type):
+        resource_args, args = args[0], args[1:]
+
+    # Now look at the first item in the args list again.
+    # If the first item is the resource options class, save it.
+    if args and isinstance(args[0], resource_options_type):
+        opts = args[0]
+
+    # If resource_args is None, see if "args" is in kwargs, and, if so, if it's typed as the
+    # the resource args type.
+    if resource_args is None:
+        a = kwargs.get("args")
+        if isinstance(a, resource_args_type):
+            resource_args = a
+
+    # If opts is None, look it up in kwargs.
+    if opts is None:
+        opts = kwargs.get("opts")
+
+    return resource_args, opts

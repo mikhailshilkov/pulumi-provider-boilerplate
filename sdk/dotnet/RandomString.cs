@@ -9,29 +9,39 @@ using Pulumi.Serialization;
 
 namespace Pulumi.Xyz
 {
-    public partial class Random : Pulumi.CustomResource
+    /// <summary>
+    /// A string of random characters of a given length.
+    /// </summary>
+    [XyzResourceType("xyz:index:RandomString")]
+    public partial class RandomString : Pulumi.CustomResource
     {
+        /// <summary>
+        /// Length of the generated string.
+        /// </summary>
         [Output("length")]
         public Output<int> Length { get; private set; } = null!;
 
+        /// <summary>
+        /// Random string that is stored in the state and is persistent across multiple runs.
+        /// </summary>
         [Output("result")]
         public Output<string> Result { get; private set; } = null!;
 
 
         /// <summary>
-        /// Create a Random resource with the given unique name, arguments, and options.
+        /// Create a RandomString resource with the given unique name, arguments, and options.
         /// </summary>
         ///
         /// <param name="name">The unique name of the resource</param>
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
-        public Random(string name, RandomArgs args, CustomResourceOptions? options = null)
-            : base("xyz:index:Random", name, args ?? new RandomArgs(), MakeResourceOptions(options, ""))
+        public RandomString(string name, RandomStringArgs args, CustomResourceOptions? options = null)
+            : base("xyz:index:RandomString", name, args ?? new RandomStringArgs(), MakeResourceOptions(options, ""))
         {
         }
 
-        private Random(string name, Input<string> id, CustomResourceOptions? options = null)
-            : base("xyz:index:Random", name, null, MakeResourceOptions(options, id))
+        private RandomString(string name, Input<string> id, CustomResourceOptions? options = null)
+            : base("xyz:index:RandomString", name, null, MakeResourceOptions(options, id))
         {
         }
 
@@ -47,25 +57,28 @@ namespace Pulumi.Xyz
             return merged;
         }
         /// <summary>
-        /// Get an existing Random resource's state with the given name, ID, and optional extra
+        /// Get an existing RandomString resource's state with the given name, ID, and optional extra
         /// properties used to qualify the lookup.
         /// </summary>
         ///
         /// <param name="name">The unique name of the resulting resource.</param>
         /// <param name="id">The unique provider ID of the resource to lookup.</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
-        public static Random Get(string name, Input<string> id, CustomResourceOptions? options = null)
+        public static RandomString Get(string name, Input<string> id, CustomResourceOptions? options = null)
         {
-            return new Random(name, id, options);
+            return new RandomString(name, id, options);
         }
     }
 
-    public sealed class RandomArgs : Pulumi.ResourceArgs
+    public sealed class RandomStringArgs : Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// Length of the string to generate.
+        /// </summary>
         [Input("length", required: true)]
         public Input<int> Length { get; set; } = null!;
 
-        public RandomArgs()
+        public RandomStringArgs()
         {
         }
     }

@@ -1,4 +1,4 @@
-// Copyright 2016-2020, Pulumi Corporation.
+// Copyright 2016-2021, Pulumi Corporation.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"github.com/pulumi/pulumi-xyz/pkg/resources"
 	"os"
 	"path"
 
@@ -32,17 +32,46 @@ import (
 	pschema "github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
 
-// emitPackage emits an entire package pack into the configured output directory with the configured settings.
-func emitPackage(schemaPath, targetSdkFolder string) error {
-	schemaBytes, err := ioutil.ReadFile(schemaPath)
-	if err != nil {
-		return errors.Wrap(err, "reading schema")
+func main() {
+	if len(os.Args) < 2 {
+		fmt.Printf("Usage: pulumi-sdkgen-xyz <target-sdk-folder>\n")
+		return
 	}
 
-	var spec pschema.PackageSpec
-	err = json.Unmarshal(schemaBytes, &spec)
+	targetSdkFolder := os.Args[1]
+
+	err := emitPackage(targetSdkFolder)
 	if err != nil {
-		return errors.Wrap(err, "reading schema")
+		fmt.Printf("Failed: %s", err.Error())
+	}
+}
+
+// emitPackage emits an entire package pack into the configured output directory with the configured settings.
+func emitPackage(targetSdkFolder string) error {
+	spec := pschema.PackageSpec{
+		Name:      "xyz",
+		Resources: map[string]pschema.ResourceSpec{},
+		Language: map[string]json.RawMessage{
+			"nodejs": rawMessage(map[string]interface{}{
+				"dependencies": map[string]string{
+					"@pulumi/pulumi": "^3.0.0",
+				},
+			}),
+			"python": rawMessage(map[string]interface{}{
+				"usesIOClasses": true,
+			}),
+			"csharp": rawMessage(map[string]interface{}{
+				"packageReferences": map[string]string{
+					"Pulumi":                       "3.*",
+					"System.Collections.Immutable": "1.6.0",
+				},
+			}),
+			"go": rawMessage(map[string]interface{}{}),
+		},
+	}
+
+	for tok, res := range resources.Resources {
+		spec.Resources[tok] = *res.Schema
 	}
 
 	ppkg, err := pschema.ImportSpec(spec, nil)
@@ -100,17 +129,8 @@ func emitFile(outDir, relPath string, contents []byte) error {
 	return err
 }
 
-func main() {
-	if len(os.Args) < 3 {
-		fmt.Printf("Usage: pulumi-sdkgen-xyz <schema-file> <target-sdk-folder>\n")
-		return
-	}
-
-	schemaPath := os.Args[1]
-	targetSdkFolder := os.Args[2]
-
-	err := emitPackage(schemaPath, targetSdkFolder)
-	if err != nil {
-		fmt.Printf("Failed: %s", err.Error())
-	}
+func rawMessage(v interface{}) json.RawMessage {
+	bytes, err := json.Marshal(v)
+	contract.Assert(err == nil)
+	return bytes
 }

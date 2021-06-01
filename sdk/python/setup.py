@@ -41,7 +41,7 @@ setup(name='pulumi_xyz',
       packages=find_packages(),
       package_data={
           'pulumi_xyz': [
-              'py.typed'
+              'py.typed',
           ]
       },
       install_requires=[
