@@ -44,7 +44,7 @@ build_python::
 build_dotnet:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 build_dotnet::
 	cd ${PACKDIR}/dotnet/ && \
-		echo "azure-native\n${DOTNET_VERSION}" >version.txt && \
+		echo "${PACK}\n${DOTNET_VERSION}" >version.txt && \
 		dotnet build /p:Version=${DOTNET_VERSION}
 
 clean::

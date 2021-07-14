@@ -19,12 +19,11 @@ import (
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
 
-// CustomResource is a manual SDK-based implementation of a (part of) resource when Azure API is missing some
-// crucial operations.
+// CustomResource is a manual SDK-based implementation of a (part of) resource.
 type CustomResource struct {
 	// Auxiliary types defined for this resource. Optional.
 	Types map[string]schema.ComplexTypeSpec
-	// Resource schema. Optional, by default the schema is assumed to be included in Azure Open API specs.
+	// Resource schema.
 	Schema *schema.ResourceSpec
 	// Create a new resource from a map of input values. Returns a map of resource outputs that match the schema shape.
 	Create func(context.Context, map[string]interface{}) (string, map[string]interface{}, error)
